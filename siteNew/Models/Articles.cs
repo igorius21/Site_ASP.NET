@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 
@@ -7,42 +8,76 @@ namespace siteNew.Models
 {
     public class Articles
     {
+        public string Id { get; private set; }
         public string Title { get; private set; }
         public string Article { get; private set; }
+        public string Email { get; private set; }
+        public string Ename { get; private set; }
+        public string Post_date { get; private set; }
 
-        public string[] titles = new string[3];
-        public string[] articles = new string[3];
+
 
         public Articles()
         {
-            titles[0] = "Тыква: как вырастить хороший урожай";
-            articles[0] = "Тыкву в былые времена часто высаживали на самых дальних участках подворья как раз по той причине, что ухода ей почти не нужно. Там она разрасталась вширь, занимая большие площади. Но на современных дачах участки небольшие – 6-10 соток. Отдать под тыкву все – нелепо. Поэтому многие огородники с ней просто не связываются. А между тем эти растения можно разместить компактно.";
-
-            titles[1] = "Обрезка старой яблони";
-            articles[1] = "Обрезку старой яблони нужно проводить в три этапа.";
-
-            titles[2] = "Весенняя обработка деревьев и кустарников от вредителей и болезней";
-            articles[2] = "Итак, с чего нужно начинать весеннюю обработку деревьев и кустарников? Для начала предлагаем осмотреться, как растения пережили зиму. Наверняка есть поломанные ветки. Пока еще довольно прохладно, сокодвижение внутри растений не началось. Поэтому смело обрезайте все, что надломилось за зиму.";
+            //DataTable table = Database.Select("SELECT title, article FROM Article");
+            //Title =   table.Rows[0]["title"].ToString();
+            //Article = table.Rows[0]["article"].ToString();
         }
 
-        public void view(int a)
-        {
-            Title = titles[a];
-            Article = articles[a];
-        }
-
-        public void add()
+        public void Add()
         {
 
         }
 
-        public void random()
+        public void Random()
         {
             Random rand = new Random();
             int count = rand.Next(0, 3);
 
-            Title = titles[count];
-            Article = articles[count];
+            DataTable table = Database.Select("SELECT title, article FROM Article");
+            if (table == null)
+            {
+                Title = "-";
+                Article = "-";
+                return;
+            }
+
+            Title = table.Rows[count]["title"].ToString();
+            Article = table.Rows[count]["article"].ToString();
+        }
+
+        public void About()
+        {
+            Title = "О проекте";
+            Article = "Это мой первый проект на ASP.NET";
+        }
+
+        public void Number(string id)
+        {
+            DataTable table = Database.Select("SELECT id, title, article, post_date FROM Article WHERE Id = '" + id + "'");
+            try
+            {
+                Id = table.Rows[0]["id"].ToString();
+                Title = table.Rows[0]["title"].ToString();
+                Article = table.Rows[0]["article"].ToString();
+                //Email = table.Rows[0]["email"].ToString();
+                //Ename = Email.Substring(0, Email.IndexOf('@'));
+                Post_date = ((DateTime)table.Rows[0]["post_date"]).ToString("yyyy-MM-dd");
+            }
+            catch
+            {
+                Id = "";
+                Title = "";
+                Title = "-";
+                Article = "-";
+                Email = "";
+                Ename = "";
+                Post_date = "";
+                return;
+            }
+
+            
+
         }
     }
 }

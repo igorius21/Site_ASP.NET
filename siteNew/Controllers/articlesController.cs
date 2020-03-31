@@ -9,29 +9,51 @@ namespace siteNew.Controllers
 {
     public class articlesController : Controller
     {
+        public ActionResult ErrorActionResult;
         // GET: articles
         public ActionResult Index()
         {
-            return View("random");
+            Articles article = new Articles();
+            if (IsError()) return ErrorActionResult;
+            return View("view", article);
         }
 
         public ActionResult add()
         {
+            if (IsError()) return ErrorActionResult;
             return View();
         }
 
         public ActionResult view()
         {
             Articles article = new Articles();
-            article.view(1);
+            string id = (RouteData.Values["id"] ?? "").ToString();
+            if (id == "")
+                return Redirect("/page");
+            article.Number(id);
+            if (IsError()) return ErrorActionResult;
             return View(article);
         }
 
         public ActionResult random()
         {
             Articles article = new Articles();
-            article.random();
-            return View(article);
+            article.Random();
+            if (IsError()) return ErrorActionResult;
+            return View("view", article);
         }
+
+        public bool IsError()
+        {
+            if (Database.IsError())
+            {
+                ViewBag.error = Database.error;
+                ViewBag.query = Database.query;
+                ErrorActionResult = View("~/Views/Error.cshtml");
+                return true;
+            }
+            return false;
+        }
+
     }
 }
