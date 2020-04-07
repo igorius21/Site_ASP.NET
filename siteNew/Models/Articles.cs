@@ -14,14 +14,12 @@ namespace siteNew.Models
         public string Email { get; private set; }
         public string Ename { get; private set; }
         public string Post_date { get; private set; }
-
+        private bool error;
 
 
         public Articles()
         {
-            //DataTable table = Database.Select("SELECT title, article FROM Article");
-            //Title =   table.Rows[0]["title"].ToString();
-            //Article = table.Rows[0]["article"].ToString();
+            error = false;
         }
 
         public void Add()
@@ -37,8 +35,11 @@ namespace siteNew.Models
             DataTable table = Database.Select("SELECT title, article FROM Article");
             if (table == null)
             {
-                Title = "-";
-                Article = "-";
+                Id = "";
+                Title = "";
+                Article = "";
+                Post_date = "";
+                error = true;
                 return;
             }
 
@@ -54,30 +55,42 @@ namespace siteNew.Models
 
         public void Number(string id)
         {
-            DataTable table = Database.Select("SELECT id, title, article, post_date FROM Article WHERE Id = '" + id + "'");
+            DataTable table = Database.Select("SELECT id, title, article, post_date FROM Article WHERE Id = '" + Database.Addslashes(id) + "'");
+            ExtractRow(table);
+        }
+
+        private void ExtractRow(DataTable table)
+        {
+            ExtractRow(table, 0);
+        }
+
+        private void ExtractRow(DataTable table, int nr)
+        {
             try
             {
-                Id = table.Rows[0]["id"].ToString();
-                Title = table.Rows[0]["title"].ToString();
-                Article = table.Rows[0]["article"].ToString();
-                //Email = table.Rows[0]["email"].ToString();
+                this.Id = table.Rows[nr]["id"].ToString();
+                Title = table.Rows[nr]["title"].ToString();
+                Article = table.Rows[nr]["article"].ToString();
+                //Email = table.Rows[nr]["email"].ToString();
                 //Ename = Email.Substring(0, Email.IndexOf('@'));
-                Post_date = ((DateTime)table.Rows[0]["post_date"]).ToString("yyyy-MM-dd");
+                Post_date = ((DateTime)table.Rows[nr]["post_date"]).ToString("yyyy-MM-dd");
             }
             catch
             {
-                Id = "";
+                this.Id = "";
                 Title = "";
-                Title = "-";
-                Article = "-";
+                Article = "";
                 Email = "";
                 Ename = "";
                 Post_date = "";
+                error = true;
                 return;
             }
+        }
 
-            
-
+        public bool IsError()
+        {
+            return error;
         }
     }
 }

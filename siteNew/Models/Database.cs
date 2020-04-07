@@ -55,5 +55,10 @@ namespace siteNew.Models
         {
             return error != "";
         }
+
+        static public string Addslashes (string text)
+        {
+            return text.Replace("\'", "\\\'");
+        }
     }
 }

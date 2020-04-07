@@ -10,10 +10,15 @@ namespace siteNew.Controllers
     public class articlesController : Controller
     {
         public ActionResult ErrorActionResult;
+        public Articles article;
+
+        public articlesController()
+        {
+            article = new Articles();
+        }
         // GET: articles
         public ActionResult Index()
         {
-            Articles article = new Articles();
             if (IsError()) return ErrorActionResult;
             return View("view", article);
         }
@@ -26,7 +31,6 @@ namespace siteNew.Controllers
 
         public ActionResult view()
         {
-            Articles article = new Articles();
             string id = (RouteData.Values["id"] ?? "").ToString();
             if (id == "")
                 return Redirect("/page");
@@ -37,7 +41,6 @@ namespace siteNew.Controllers
 
         public ActionResult random()
         {
-            Articles article = new Articles();
             article.Random();
             if (IsError()) return ErrorActionResult;
             return View("view", article);
@@ -48,6 +51,13 @@ namespace siteNew.Controllers
             if (Database.IsError())
             {
                 ViewBag.error = Database.error;
+                ViewBag.query = Database.query;
+                ErrorActionResult = View("~/Views/Error.cshtml");
+                return true;
+            }
+            if (article.IsError())
+            {
+                ViewBag.error = "Article not found";
                 ViewBag.query = Database.query;
                 ErrorActionResult = View("~/Views/Error.cshtml");
                 return true;
